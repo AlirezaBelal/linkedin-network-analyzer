@@ -14,8 +14,9 @@ from scripts.modules.engagement_priority import assign_priority, compute_priorit
 class CategorizationTests(unittest.TestCase):
     def test_expected_role_categories(self) -> None:
         self.assertEqual(categorize_title("Senior Product Manager"), "Product")
-        self.assertEqual(categorize_title("Machine Learning Engineer"), "Developer")
+        self.assertEqual(categorize_title("Machine Learning Engineer"), "AI / Data")
         self.assertEqual(categorize_title("Technical Recruiter"), "HR / Recruiter")
+        self.assertEqual(categorize_title("Backend Software Engineer"), "Developer")
         self.assertEqual(categorize_title("Founder"), "Other")
 
     def test_missing_title_is_other(self) -> None:

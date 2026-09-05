@@ -4,7 +4,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
 
 def visualize_priority(input_file: str | Path, output_dir: str | Path) -> str:
@@ -26,18 +25,27 @@ def visualize_priority(input_file: str | Path, output_dir: str | Path) -> str:
     plt.savefig(destination / "priority_distribution_pie.png")
     plt.close()
 
-    plt.figure(figsize=(10, 6))
-    sns.countplot(data=dataframe, x="Category", hue="Priority")
-    plt.title("Category vs Priority")
-    plt.xticks(rotation=45)
+    cross_table = pd.crosstab(dataframe["Category"], dataframe["Priority"])
+    axis = cross_table.plot.bar(figsize=(10, 6))
+    axis.set_title("Category vs Priority")
+    axis.set_xlabel("Category")
+    axis.set_ylabel("Connections")
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.savefig(destination / "category_vs_priority.png")
     plt.close()
 
+    groups = [
+        group["Priority Score"].dropna().to_numpy()
+        for _, group in dataframe.groupby("Category", sort=True)
+    ]
+    labels = [name for name, _ in dataframe.groupby("Category", sort=True)]
     plt.figure(figsize=(10, 6))
-    sns.boxplot(data=dataframe, x="Category", y="Priority Score")
+    plt.boxplot(groups, tick_labels=labels)
     plt.title("Priority Score Distribution by Category")
-    plt.xticks(rotation=45)
+    plt.xlabel("Category")
+    plt.ylabel("Priority Score")
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.savefig(destination / "priority_score_boxplot.png")
     plt.close()

@@ -31,6 +31,33 @@ def categorize_title(title: object) -> str:
     if any(
         keyword in normalized
         for keyword in (
+            "machine learning",
+            "deep learning",
+            "data scientist",
+            "data analyst",
+            "data engineer",
+            "ai engineer",
+            "ml engineer",
+            "artificial intelligence",
+        )
+    ) or normalized.startswith(("ai ", "ml ", "data ")):
+        return "AI / Data"
+
+    if any(
+        keyword in normalized
+        for keyword in (
+            "product manager",
+            "head of product",
+            "product owner",
+            "product lead",
+            "product",
+        )
+    ) or normalized == "pm":
+        return "Product"
+
+    if any(
+        keyword in normalized
+        for keyword in (
             "developer",
             "engineer",
             "cto",
@@ -43,18 +70,6 @@ def categorize_title(title: object) -> str:
         )
     ):
         return "Developer"
-
-    if any(
-        keyword in normalized
-        for keyword in ("product manager", "head of product", "product owner", "product", " pm ")
-    ) or normalized in {"pm", "product lead"}:
-        return "Product"
-
-    if any(
-        keyword in normalized
-        for keyword in ("machine learning", "deep learning", "data scientist", "data analyst", " ai ", " ml ")
-    ) or normalized.startswith(("ai ", "ml ", "data ")):
-        return "AI / Data"
 
     return "Other"
 

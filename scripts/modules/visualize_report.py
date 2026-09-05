@@ -4,7 +4,6 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
 
 def visualize_report(input_file: str | Path, output_dir: str | Path) -> str:
@@ -27,21 +26,21 @@ def visualize_report(input_file: str | Path, output_dir: str | Path) -> str:
     plt.close()
 
     plt.figure(figsize=(10, 6))
-    sns.countplot(
-        data=dataframe,
-        x="Action Recommendation",
-        order=dataframe["Action Recommendation"].value_counts().index,
-    )
+    dataframe["Action Recommendation"].value_counts().plot.bar()
     plt.title("Action Recommendations Count")
-    plt.xticks(rotation=45)
+    plt.xlabel("Action Recommendation")
+    plt.ylabel("Connections")
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.savefig(destination / "action_recommendation_count.png")
     plt.close()
 
-    plt.figure(figsize=(10, 6))
-    sns.countplot(data=dataframe, x="Category", hue="Action Recommendation")
-    plt.title("Category vs Action Recommendation")
-    plt.xticks(rotation=45)
+    cross_table = pd.crosstab(dataframe["Category"], dataframe["Action Recommendation"])
+    axis = cross_table.plot.bar(figsize=(10, 6))
+    axis.set_title("Category vs Action Recommendation")
+    axis.set_xlabel("Category")
+    axis.set_ylabel("Connections")
+    plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.savefig(destination / "category_vs_action.png")
     plt.close()
