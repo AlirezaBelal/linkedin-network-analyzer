@@ -1,31 +1,42 @@
-import os
+from __future__ import annotations
+
+from pathlib import Path
 
 import pandas as pd
 
+RECOMMENDATIONS = {
+    "Product": "Prioritize outreach",
+    "AI / Data": "Prioritize outreach",
+    "Developer": "Explore collaboration",
+    "HR / Recruiter": "Keep warm",
+    "Other": "Review manually",
+}
 
-def analyze_and_decide(input_file, output_file):
-    """
-    Add action recommendation for each connection based on category
-    and save as Excel.
-    """
-    df = pd.read_csv(input_file)
 
-    def action_recommendation(category):
-        if category == "Product":
-            return "Engage / Follow"
-        elif category == "Developer":
-            return "Collaborate / Follow"
-        elif category == "HR / Recruiter":
-            return "Keep / Follow"
-        elif category == "AI / Data":
-            return "Engage / Follow"
-        else:
-            return "Unfollow / Remove"
+def action_recommendation(category: object) -> str:
+    """Return a review recommendation; uncertain categories fail to manual review."""
+    return RECOMMENDATIONS.get(str(category), "Review manually")
 
-    df["Action Recommendation"] = df["Category"].apply(action_recommendation)
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    df.to_excel(output_file, index=False)
 
-    print("✅ Analyze & Decide Completed")
-    print(df.groupby(["Category", "Action Recommendation"]).size())
-    return output_file
+def analyze_and_decide(input_file: str | Path, output_file: str | Path) -> str:
+    """Add explainable review recommendations and save them as an Excel workbook."""
+    dataframe = pd.read_csv(input_file, encoding="utf-8-sig")
+    if "Category" not in dataframe.columns:
+        raise ValueError("Categorized input must contain a 'Category' column.")
+
+    dataframe["Action Recommendation"] = dataframe["Category"].apply(action_recommendation)
+    dataframe["Recommendation Basis"] = (
+        "Role-title heuristic only; review context before taking account actions."
+    )
+
+    destination = Path(output_file)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    dataframe.to_excel(destination, index=False)
+
+    print("Recommendation analysis completed")
+    print(
+        dataframe.groupby(["Category", "Action Recommendation"], dropna=False)
+        .size()
+        .to_string()
+    )
+    return str(destination)
