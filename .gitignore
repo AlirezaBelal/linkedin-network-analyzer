@@ -1,0 +1,16 @@
+.idea
+__pycache__/
+*.csv
+*.xlsx
+*.png
+chrome-user-data
+output
+data.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+data/
+output/
+chrome-user-data/
