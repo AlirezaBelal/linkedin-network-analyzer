@@ -1,16 +1,40 @@
-.idea
+.idea/
+.vscode/
+.venv/
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Private LinkedIn exports and generated analysis artifacts
+data/
+output/
+demo-output/
 *.csv
 *.xlsx
 *.png
-chrome-user-data
-output
+
+# Keep only the synthetic demonstration dataset tracked
+!examples/
+!examples/*.csv
+
+# Browser/session artifacts from historical local automation
+chrome-user-data/
+.local/
+
+# Local configuration and secrets
 data.env
+.env
 .env.*
 *.pem
 *.key
 *.p12
 *.pfx
-data/
-output/
-chrome-user-data/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linkedin-network-analyzer"
+version = "1.0.0"
+description = "Privacy-aware LinkedIn connections export analysis with explainable recommendations and deterministic priority scoring."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Alireza Belal"}
+]
+dependencies = [
+  "pandas>=2.0",
+  "openpyxl>=3.1",
+  "matplotlib>=3.7"
+]
+
+[project.scripts]
+linkedin-network-analyzer = "scripts.main:main"
+
+[tool.setuptools.packages.find]
+include = ["scripts*"]
