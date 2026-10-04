@@ -218,9 +218,36 @@ with gr.Blocks(title="LinkedIn Network Analyzer") as demo:
     )
 
     run_btn = gr.Button("Analyze", variant="primary")
-    output = gr.Dataframe(label="Analysis output", wrap=True)
-    summary = gr.Markdown()
-    download = gr.File(label="Download analyzed CSV")
+
+    output_columns = [
+        "First Name",
+        "Last Name",
+        "URL",
+        "Company",
+        "Position",
+        "Category",
+        "Action Recommendation",
+        "Recommendation Basis",
+        "Priority Score",
+        "Priority",
+        "Priority Basis",
+    ]
+    output = gr.Dataframe(
+        headers=output_columns,
+        value=pd.DataFrame(columns=output_columns),
+        label="Analysis output",
+        interactive=False,
+        wrap=True,
+    )
+    summary = gr.Markdown(
+        "### Ready to analyze\n"
+        "Upload a CSV or use the synthetic example, then select **Analyze**."
+    )
+    download = gr.DownloadButton(
+        "Download analyzed CSV",
+        value=None,
+        variant="secondary",
+    )
 
     sample_btn.click(lambda: SAMPLE, outputs=preview)
 
