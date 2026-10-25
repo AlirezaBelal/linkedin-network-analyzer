@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.1 - 2026-10-25
+
+### Security and correctness
+
+- Replace uploaded-contact public Space functionality with synthetic-only, read-only preview source; publication now requires explicit owner approval on `master` (running hosted instance not yet verified).
+- Remove obsolete runnable connection-removal script from current tree; old Git history is unchanged.
+- Bound private local CSV input to 20 MiB, 50,000 rows and 64 columns; reject empty exports and duplicate headers.
+- Recompute analysis prerequisites from the supplied CSV to avoid reusing stale results; protect Excel exports from formula injection and restrict newly created POSIX files.
+- Add synthetic regression, full visualization smoke and hosted-data policy tests, with measured 92% Python source coverage on the reviewed baseline.
+- Extend CI to audit the independent demo requirements, and update Actions to Node 24 capable versions.
+
+
 All notable changes to the productized public baseline are documented here.
 
 ## 1.0.0 - 2026-09-05

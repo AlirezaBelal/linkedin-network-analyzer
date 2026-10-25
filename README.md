@@ -333,7 +333,7 @@ These are explicit product boundaries rather than missing claims hidden behind t
 
 ## Release
 
-The productized baseline is tracked as `1.0.0` in `VERSION`, with notable changes documented in [CHANGELOG.md](CHANGELOG.md).
+Current source release: **1.0.1** (security and data-processing hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This release tag describes repository source, **not** approval or verification of the deployed Hugging Face Space.
 
 ## License
 

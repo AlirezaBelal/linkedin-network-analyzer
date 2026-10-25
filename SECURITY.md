@@ -35,4 +35,4 @@ An older Space revision allowed CSV uploads and wrote all download outputs to a 
 
 ## Dependency security
 
-GitHub Actions installs the package, checks dependency consistency, runs offline tests, executes a synthetic smoke test, and audits runtime dependencies for known vulnerabilities.
+GitHub Actions installs the package, checks dependency consistency, runs offline tests, executes a synthetic smoke test, and audits the separate CLI and public-demo requirement sets for known vulnerabilities. Passing dependency audits do not certify the live Hugging Face instance or purge historical files.
