@@ -31,8 +31,8 @@ The supported LinkedIn Network Analyzer workflow is local data analysis only. It
 
 The historical destructive connection-removal script was removed from the active tree; old Git revisions may still contain it. The supported code performs analysis only.
 
-An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is synthetic-only: no user input, processing or download. **This source change does not deploy the Space or delete historical uploads, caches, logs and revisions.** Hosted replacement requires separate, explicit owner approval.
+An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is a static HTML/CSS preview with no user input, processing, user download, Gradio or image/Pillow dependency. **This source change does not deploy the Space or delete historical uploads, caches, logs and revisions.** Hosted replacement requires separate, explicit owner approval.
 
 ## Dependency security
 
-GitHub Actions installs the package, checks dependency consistency, runs offline tests, executes a synthetic smoke test, and audits the separate CLI and public-demo requirement sets for known vulnerabilities. Passing dependency audits do not certify the live Hugging Face instance or purge historical files.
+GitHub Actions installs the package, checks dependency consistency, runs offline tests, executes a synthetic smoke test, and audits CLI runtime dependencies. The public static preview has **no Python dependency set to audit**. A previously tested Gradio 6 stack pulled Pillow 12.3.0, which failed dependency auditing with advisories fixed in Pillow 13; removing this unnecessary dynamic stack is intentional, not an audit suppression. Passing checks do not certify the live Hugging Face instance or purge historical files.

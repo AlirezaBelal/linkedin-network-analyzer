@@ -28,4 +28,4 @@ jobs:
         env:
           HF_OIDC_RESOURCE: spaces/AlirezaBelal/linkedin-network-analyzer
         run: |
-          hf upload AlirezaBelal/linkedin-network-analyzer ./hf-space . --repo-type space --commit-message "Owner-approved GitHub commit $GITHUB_SHA"
+          hf upload AlirezaBelal/linkedin-network-analyzer ./hf-space . --repo-type space --delete app.py --delete requirements.txt --commit-message "Owner-approved static source $GITHUB_SHA"
