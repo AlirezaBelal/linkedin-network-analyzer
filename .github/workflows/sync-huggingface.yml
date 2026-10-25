@@ -1,32 +1,31 @@
 name: Sync Hugging Face Space
-
+# Never publish hosted code on a GitHub push; owner approval is mandatory.
 on:
-  push:
-    branches: [master]
-    paths:
-      - "hf-space/**"
-      - ".github/workflows/sync-huggingface.yml"
   workflow_dispatch:
-
+    inputs:
+      confirm_publication:
+        description: "I approve publishing the reviewed synthetic-only Space"
+        required: true
+        type: boolean
+        default: false
+permissions:
+  contents: read
 jobs:
   publish:
+    if: github.ref == 'refs/heads/master' && inputs.confirm_publication == true
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
-
     steps:
-      - name: Checkout
+      - name: Checkout reviewed source
         uses: actions/checkout@v4
-
-      - name: Install Hugging Face CLI
-        run: |
-          curl -LsSf https://hf.co/cli/install.sh | bash
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Publish Space
+        with:
+          persist-credentials: false
+      - name: Install pinned Hugging Face CLI
+        run: python -m pip install 'huggingface_hub==2.3.0'
+      - name: Publish only the approved Space folder
         env:
           HF_OIDC_RESOURCE: spaces/AlirezaBelal/linkedin-network-analyzer
         run: |
-          hf upload AlirezaBelal/linkedin-network-analyzer ./hf-space . --repo-type space --commit-message "Deploy from GitHub ${GITHUB_SHA::7}"
+          hf upload AlirezaBelal/linkedin-network-analyzer ./hf-space . --repo-type space --commit-message "Owner-approved GitHub commit $GITHUB_SHA"

@@ -46,7 +46,7 @@ human review / optional downstream workflow
 
 ## Core capabilities
 
-- **LinkedIn export ingestion** with support for a short preamble before the CSV header
+- **Bounded LinkedIn export ingestion** (20 MiB, 50,000 rows, 64 columns) with support for a short preamble before the CSV header and rejection of duplicate headers
 - **Role-title categorization** into Product, Developer, AI / Data, HR / Recruiter, and Other
 - **Explainable recommendations** that intentionally send uncertain records to manual review
 - **Deterministic priority scoring** with no simulated/random activity values
@@ -165,7 +165,7 @@ output/
     └── priority_score_boxplot.png
 ```
 
-The Excel outputs preserve the original export columns and add analysis fields such as `Category`, `Action Recommendation`, `Priority Score`, and `Priority`.
+The Excel outputs preserve the export columns and add analysis fields such as `Category`, `Action Recommendation`, `Priority Score`, and `Priority`. **Potential spreadsheet formulas in untrusted text are prefixed with an apostrophe in Excel exports**, so displayed text can differ from original CSV data. Raw CSV files are not formula-sanitized; import them as text when using spreadsheet software. Runs always recompute intermediate stages from the current input, rather than trusting stale outputs.
 
 ## Repository structure
 
@@ -196,7 +196,7 @@ The Excel outputs preserve the original export columns and add analysis fields s
     └── ci.yml
 ```
 
-A historical browser-automation script is retained in the repository for provenance, but it is **not part of the supported analyzer workflow**. Use the separate `linkedin-connection-remover` project for the maintained safety-first removal workflow.
+The unsafe historical browser-based connection-removal script is **removed from the current source tree**. It may remain in past Git revisions. This repository performs analysis only; use the independent `linkedin-connection-remover` project for any separately reviewed account-management workflow.
 
 ## Quick start
 
@@ -262,6 +262,12 @@ linkedin-network-analyzer --input data/Connections.csv --step recommend
 linkedin-network-analyzer --input data/Connections.csv --step prioritize
 ```
 
+## Public demo and deployment safeguards
+
+The public Hugging Face Space source now shows **fixed fictional records only** and contains no CSV upload, editable contact table or generated download. Earlier Space source accepted real exports and wrote a shared temporary download path; the new source eliminates that path. **A GitHub commit does not change the running Space, purge old cache/logs, or prove data deletion.** The operator must authorize and verify the replacement separately.
+
+Hugging Face publication is **manual-only**, restricted to `master` and explicit owner approval. GitHub PRs and pushes cannot publish new hosted code. Do not upload real contacts to an unverified hosted service.
+
 ## Tests
 
 Run locally:
@@ -298,6 +304,9 @@ CI does not access LinkedIn, use credentials, or process real connection data.
 LinkedIn exports contain personal data. The repository therefore ignores local `data/`, generated `output/`, CSV/Excel outputs, browser profiles, and common secret-file formats while explicitly allowing only the synthetic example dataset.
 
 For real workflows:
+
+- process files in a private directory; on POSIX the CLI uses a restrictive creation umask for new output, but cannot correct the permissions of existing files or remote sync/backup destinations
+- reject files larger than 20 MiB, more than 50,000 rows, or more than 64 columns; very large, adversarial inputs are outside this CLI's supported scope
 
 - do not commit LinkedIn exports or generated review files
 - do not publish email addresses, profile URLs, or connection lists

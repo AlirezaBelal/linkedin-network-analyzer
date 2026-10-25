@@ -23,13 +23,15 @@ For real use:
 - use synthetic records when reporting bugs
 - review local filesystem permissions and backup/sync behavior before processing sensitive exports
 
-The repository `.gitignore` excludes common export/output paths and secret-file patterns, but ignore rules are not a substitute for operational care.
+The repository `.gitignore` excludes common export/output paths and secret-file patterns, but ignore rules are not a substitute for operational care. The local CLI bounds CSV files to 20 MiB, 50,000 rows and 64 columns; it rejects duplicate headers. New outputs use a restrictive creation umask on POSIX, but previously existing files and synchronized folders require operator review. When writing Excel, formula-like contact fields are quoted to avoid creating executable spreadsheet formulas; raw CSV must be imported as text.
 
 ## Application boundary
 
 The supported LinkedIn Network Analyzer workflow is local data analysis only. It does not require LinkedIn credentials and does not log in to LinkedIn.
 
-A historical browser-automation file remains in the repository for provenance and is outside the supported analyzer workflow. For maintained connection-removal behavior, use the separate `linkedin-connection-remover` repository and review its safeguards before any live action.
+The historical destructive connection-removal script was removed from the active tree; old Git revisions may still contain it. The supported code performs analysis only.
+
+An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is synthetic-only: no user input, processing or download. **This source change does not deploy the Space or delete historical uploads, caches, logs and revisions.** Hosted replacement requires separate, explicit owner approval.
 
 ## Dependency security
 

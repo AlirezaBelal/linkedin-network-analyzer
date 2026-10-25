@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import csv
 from pathlib import Path
 
 import pandas as pd
+
+MAX_INPUT_BYTES = 20 * 1024 * 1024
+MAX_INPUT_ROWS = 50_000
+MAX_COLUMNS = 64
 
 CATEGORY_FILENAMES = {
     "HR / Recruiter": "HR _ Recruiter.csv",
@@ -89,19 +94,36 @@ def detect_header_row(input_file: str | Path, max_lines: int = 12) -> int:
 
 def read_connections_csv(input_file: str | Path) -> pd.DataFrame:
     path = Path(input_file)
-    if not path.exists():
-        raise FileNotFoundError(f"Input file not found: {path}")
+    if not path.is_file():
+        raise FileNotFoundError("Input CSV not found or unavailable")
+    if path.stat().st_size > MAX_INPUT_BYTES:
+        raise ValueError("Connections CSV exceeds the 20 MiB input limit")
 
     header_row = detect_header_row(path)
-    dataframe = pd.read_csv(path, skiprows=header_row, encoding="utf-8-sig")
+    # pandas otherwise silently repairs duplicate column names into ".1" names
+    # and may infer numeric/NaN types for private contact fields.
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        for _ in range(header_row):
+            handle.readline()
+        header_line = handle.readline(8193)
+    if len(header_line) > 8192:
+        raise ValueError("Connections CSV header is too long")
+    try:
+        columns = [name.strip() for name in next(csv.reader([header_line], strict=True))]
+    except (csv.Error, StopIteration) as exc:
+        raise ValueError("Invalid Connections CSV header") from exc
+    if not columns or len(columns) > MAX_COLUMNS or len(columns) != len(set(columns)):
+        raise ValueError("Connections CSV columns are empty, duplicated or excessive")
+
+    dataframe = pd.read_csv(path, skiprows=header_row, encoding="utf-8-sig",
+                            dtype=str, keep_default_na=False, nrows=MAX_INPUT_ROWS + 1)
     dataframe.columns = [str(column).strip() for column in dataframe.columns]
-
     if "Position" not in dataframe.columns:
-        raise ValueError(
-            "Input CSV must contain a 'Position' column. "
-            "Use a LinkedIn connections export or a compatible CSV."
-        )
-
+        raise ValueError("Input CSV must contain a 'Position' column")
+    if len(dataframe) == 0 or len(dataframe) > MAX_INPUT_ROWS:
+        raise ValueError("Connections CSV is empty or exceeds the 50000-row limit")
+    if len(dataframe.columns) != len(columns):
+        raise ValueError("Connections CSV has inconsistent columns")
     return dataframe
 
 
