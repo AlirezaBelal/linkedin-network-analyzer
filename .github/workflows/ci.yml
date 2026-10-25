@@ -119,4 +119,7 @@ jobs:
             exit 1
           fi
           test ! -f linkedin_remove_connections.py
-          python -m compileall -q hf-space/app.py
+          test ! -e hf-space/app.py
+          test ! -e hf-space/requirements.txt
+          test -f hf-space/index.html
+          grep -qx 'sdk: static' hf-space/README.md

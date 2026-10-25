@@ -97,27 +97,6 @@ Priority bands:
 
 This is a portfolio-review heuristic. It is **not an engagement score** and does not claim to measure relationship strength, message history, content interaction, or business value.
 
-## Complementary downstream workflow
-
-For a separately scoped, safety-first workflow that can review a bounded list of profile URLs before connection removal, see **[linkedin-connection-remover](https://github.com/AlirezaBelal/linkedin-connection-remover)**.
-
-```text
-LinkedIn export
-      |
-      v
-LinkedIn Network Analyzer
-categorize · recommend · prioritize · report
-      |
-      v
-human-reviewed shortlist
-      |
-      v
-LinkedIn Connection Remover (optional, separate repository)
-dry-run · explicit confirmation · bounded execution
-```
-
-The repositories are intentionally independent. This analyzer never invokes the remover.
-
 ## Input schema
 
 The only required column is:
@@ -191,12 +170,18 @@ The Excel outputs preserve the export columns and add analysis fields such as `C
 │       ├── visualize_report.py
 │       └── visualize_priority.py
 ├── tests/
-│   └── test_analysis.py
+│   ├── test_analysis.py
+│   ├── test_processing_safety.py
+│   └── test_space_safety.py
+├── hf-space/
+│   ├── README.md
+│   └── index.html
 └── .github/workflows/
-    └── ci.yml
+    ├── ci.yml
+    └── sync-huggingface.yml
 ```
 
-The unsafe historical browser-based connection-removal script is **removed from the current source tree**. It may remain in past Git revisions. This repository performs analysis only; use the independent `linkedin-connection-remover` project for any separately reviewed account-management workflow.
+The unsafe historical browser-based connection-removal script is **removed from the current source tree**. It may remain in past Git revisions. This repository performs local analysis only and provides no supported account-management integration.
 
 ## Quick start
 
@@ -264,7 +249,7 @@ linkedin-network-analyzer --input data/Connections.csv --step prioritize
 
 ## Public demo and deployment safeguards
 
-The public Hugging Face Space source is now **Static HTML/CSS with fictional records only**: no CSV upload, editable contact table, JavaScript, Python backend, Gradio or generated download. Earlier versions accepted contact exports and used a shared temporary download path. These are removed from **source**, not necessarily the running hosted service. **A GitHub commit does not deploy a new Space, purge old caches/logs, or prove historical data deletion.** The operator must authorize and verify the replacement and review hosted SDK/hardware settings separately.
+The public Hugging Face Space source is now **Static HTML/CSS with fictional records only**: no CSV upload, editable contact table, JavaScript, Python backend, Gradio or generated download. Earlier versions accepted contact exports and used a shared temporary download path. The owner-approved [publication on 2026-10-25](https://github.com/AlirezaBelal/linkedin-network-analyzer/actions/runs/40231390292) replaced the current Space tree with the static preview and removed `app.py` and `requirements.txt`. The public Space API was rechecked on 2026-10-26: `sdk: static`, runtime `RUNNING`, no GPU hardware requested. **Current-tree replacement does not prove deletion of historical uploads, caches, logs or Git revisions.** Each future publication still requires separate owner approval.
 
 Hugging Face publication is **manual-only**, restricted to `master` and explicit owner approval. GitHub PRs and pushes cannot publish new hosted code. Do not upload real contacts to an unverified hosted service.
 
@@ -333,7 +318,7 @@ These are explicit product boundaries rather than missing claims hidden behind t
 
 ## Release
 
-Current source release: **1.0.1** (security and data-processing hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This release tag describes repository source, **not** approval or verification of the deployed Hugging Face Space.
+Current source release: **1.0.1** (security and data-processing hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This version describes repository source; publication has its own owner approval and verification boundary.
 
 ## License
 

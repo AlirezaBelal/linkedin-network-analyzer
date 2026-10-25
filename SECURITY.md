@@ -31,7 +31,7 @@ The supported LinkedIn Network Analyzer workflow is local data analysis only. It
 
 The historical destructive connection-removal script was removed from the active tree; old Git revisions may still contain it. The supported code performs analysis only.
 
-An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is a static HTML/CSS preview with no user input, processing, user download, Gradio or image/Pillow dependency. **This source change does not deploy the Space or delete historical uploads, caches, logs and revisions.** Hosted replacement requires separate, explicit owner approval.
+An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is a static HTML/CSS preview with no user input, processing, user download, Gradio or image/Pillow dependency. The owner-approved static publication succeeded on 2026-10-25; the current remote tree and static SDK were rechecked on 2026-10-26. **This does not certify deletion of historical uploads, caches, logs, backups or revisions.** Future hosted publications still require separate, explicit owner approval.
 
 ## Dependency security
 
