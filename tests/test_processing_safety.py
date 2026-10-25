@@ -76,6 +76,29 @@ class ProcessingBoundaryTests(unittest.TestCase):
         self.assertEqual(sheet["C2"].data_type, "s")
         self.assertEqual(sheet["D2"].data_type, "s")
 
+    def test_complete_report_pipeline_renders_six_charts(self):
+        # Offline end-to-end coverage of both charting backends.
+        self.save(
+            "A,Example,Product Manager,Example Co,https://example.invalid/a\n"
+            "B,Example,Technical Recruiter,Example Co,https://example.invalid/b\n"
+            "C,Example,Backend Engineer,Example Co,https://example.invalid/c\n"
+            "D,Example,Founder,Example Co,https://example.invalid/d\n"
+        )
+        run_pipeline(self.csv, self.out, "all")
+        expected = (
+            "reports/category_distribution_pie.png",
+            "reports/action_recommendation_count.png",
+            "reports/category_vs_action.png",
+            "priority_reports/priority_distribution_pie.png",
+            "priority_reports/category_vs_priority.png",
+            "priority_reports/priority_score_boxplot.png",
+        )
+        for relative in expected:
+            with self.subTest(file=relative):
+                image = self.out / relative
+                self.assertTrue(image.is_file())
+                self.assertGreater(image.stat().st_size, 500)
+
     @unittest.skipUnless(os.name == "posix", "POSIX creation permissions")
     def test_new_files_not_world_readable(self):
         self.save("A,Example,Product Manager,Example Co,https://example.invalid\n")
