@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.modules.excel_safety import safe_for_excel
+
 RECOMMENDATIONS = {
     "Product": "Prioritize outreach",
     "AI / Data": "Prioritize outreach",
@@ -31,7 +33,7 @@ def analyze_and_decide(input_file: str | Path, output_file: str | Path) -> str:
 
     destination = Path(output_file)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    dataframe.to_excel(destination, index=False)
+    safe_for_excel(dataframe).to_excel(destination, index=False)
 
     print("Recommendation analysis completed")
     print(

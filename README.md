@@ -46,7 +46,7 @@ human review / optional downstream workflow
 
 ## Core capabilities
 
-- **LinkedIn export ingestion** with support for a short preamble before the CSV header
+- **Bounded LinkedIn export ingestion** (20 MiB, 50,000 rows, 64 columns) with support for a short preamble before the CSV header and rejection of duplicate headers
 - **Role-title categorization** into Product, Developer, AI / Data, HR / Recruiter, and Other
 - **Explainable recommendations** that intentionally send uncertain records to manual review
 - **Deterministic priority scoring** with no simulated/random activity values
@@ -165,7 +165,7 @@ output/
     └── priority_score_boxplot.png
 ```
 
-The Excel outputs preserve the original export columns and add analysis fields such as `Category`, `Action Recommendation`, `Priority Score`, and `Priority`.
+The Excel outputs preserve the export columns and add analysis fields such as `Category`, `Action Recommendation`, `Priority Score`, and `Priority`. **Potential spreadsheet formulas in untrusted text are prefixed with an apostrophe in Excel exports**, so displayed text can differ from original CSV data. Raw CSV files are not formula-sanitized; import them as text when using spreadsheet software. Runs always recompute intermediate stages from the current input, rather than trusting stale outputs.
 
 ## Repository structure
 
@@ -304,6 +304,9 @@ CI does not access LinkedIn, use credentials, or process real connection data.
 LinkedIn exports contain personal data. The repository therefore ignores local `data/`, generated `output/`, CSV/Excel outputs, browser profiles, and common secret-file formats while explicitly allowing only the synthetic example dataset.
 
 For real workflows:
+
+- process files in a private directory; on POSIX the CLI uses a restrictive creation umask for new output, but cannot correct the permissions of existing files or remote sync/backup destinations
+- reject files larger than 20 MiB, more than 50,000 rows, or more than 64 columns; very large, adversarial inputs are outside this CLI's supported scope
 
 - do not commit LinkedIn exports or generated review files
 - do not publish email addresses, profile URLs, or connection lists

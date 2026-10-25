@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from scripts.modules.excel_safety import safe_for_excel
+
 CATEGORY_SCORE = {
     "Product": 5,
     "Developer": 4,
@@ -50,7 +52,7 @@ def add_priority_score(input_file: str | Path, output_file: str | Path) -> str:
 
     destination = Path(output_file)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    dataframe.to_excel(destination, index=False)
+    safe_for_excel(dataframe).to_excel(destination, index=False)
 
     print("Priority scoring completed")
     print(dataframe.groupby("Priority").size().to_string())
