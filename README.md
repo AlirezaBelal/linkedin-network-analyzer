@@ -264,7 +264,7 @@ linkedin-network-analyzer --input data/Connections.csv --step prioritize
 
 ## Public demo and deployment safeguards
 
-The public Hugging Face Space source now shows **fixed fictional records only** and contains no CSV upload, editable contact table or generated download. Earlier Space source accepted real exports and wrote a shared temporary download path; the new source eliminates that path. **A GitHub commit does not change the running Space, purge old cache/logs, or prove data deletion.** The operator must authorize and verify the replacement separately.
+The public Hugging Face Space source is now **Static HTML/CSS with fictional records only**: no CSV upload, editable contact table, JavaScript, Python backend, Gradio or generated download. Earlier versions accepted contact exports and used a shared temporary download path. These are removed from **source**, not necessarily the running hosted service. **A GitHub commit does not deploy a new Space, purge old caches/logs, or prove historical data deletion.** The operator must authorize and verify the replacement and review hosted SDK/hardware settings separately.
 
 Hugging Face publication is **manual-only**, restricted to `master` and explicit owner approval. GitHub PRs and pushes cannot publish new hosted code. Do not upload real contacts to an unverified hosted service.
 
@@ -333,7 +333,7 @@ These are explicit product boundaries rather than missing claims hidden behind t
 
 ## Release
 
-The productized baseline is tracked as `1.0.0` in `VERSION`, with notable changes documented in [CHANGELOG.md](CHANGELOG.md).
+Current source release: **1.0.1** (security and data-processing hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This release tag describes repository source, **not** approval or verification of the deployed Hugging Face Space.
 
 ## License
 

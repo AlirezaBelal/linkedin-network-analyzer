@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'none'; font-src 'none'; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>LinkedIn Network Analyzer — Synthetic Preview</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,Arial,sans-serif}
+body{max-width:980px;margin:0 auto;padding:30px 18px;line-height:1.55}
+h1{font-size:clamp(1.5rem,3vw,2.3rem)}
+p{max-width:75ch}
+.notice{border:1px solid #888;border-radius:12px;padding:16px}
+.table-wrap{max-width:100%;overflow-x:auto;margin-block:20px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{border:1px solid #888;padding:8px 12px;text-align:left;white-space:nowrap}
+th{background:rgba(120,120,120,.15)}
+a{color:inherit;text-decoration:underline;font-weight:bold}
+small{opacity:.8}
+</style>
+</head>
+<body>
+<header>
+<h1>LinkedIn Network Analyzer</h1>
+<p><strong>Fictional, read-only preview.</strong> No LinkedIn login, upload, text entry,
+generated download, account modification, or visitor contact processing.</p>
+</header>
+<main>
+<section class="notice" aria-label="Privacy">
+<p><strong>Your contact exports belong on your own computer.</strong>
+This page contains five fictional example records only.
+Run the <a href="https://github.com/AlirezaBelal/linkedin-network-analyzer" rel="noopener noreferrer">local CLI</a>
+for private analysis. Do not send a real LinkedIn export to any public demo.</p>
+</section>
+<h2>Fictional example input</h2>
+<div class="table-wrap">
+<table id="synthetic-input">
+<caption>Five fictional connections</caption>
+<thead><tr><th scope="col">Name</th><th scope="col">Role</th><th scope="col">Company</th></tr></thead>
+<tbody>
+<tr><td>Ava Example</td><td>Senior Product Manager</td><td>Example Labs</td></tr>
+<tr><td>Noah Example</td><td>Machine Learning Engineer</td><td>Example AI</td></tr>
+<tr><td>Mina Example</td><td>Technical Recruiter</td><td>Example Talent</td></tr>
+<tr><td>Omid Example</td><td>Backend Software Engineer</td><td>Example Systems</td></tr>
+<tr><td>Sara Example</td><td>Founder</td><td>Example Studio</td></tr>
+</tbody></table></div>
+<h2>Illustrative analysis output</h2>
+<div class="table-wrap">
+<table id="synthetic-analysis">
+<caption>Deterministic role-title heuristics — human review required</caption>
+<thead><tr><th scope="col">Name</th><th scope="col">Category</th><th scope="col">Recommendation</th><th scope="col">Score</th><th scope="col">Priority</th></tr></thead>
+<tbody>
+<tr><td>Ava Example</td><td>Product</td><td>Prioritize outreach</td><td>8</td><td>High</td></tr>
+<tr><td>Noah Example</td><td>AI / Data</td><td>Prioritize outreach</td><td>7</td><td>High</td></tr>
+<tr><td>Mina Example</td><td>HR / Recruiter</td><td>Keep warm</td><td>6</td><td>Medium</td></tr>
+<tr><td>Omid Example</td><td>Developer</td><td>Explore collaboration</td><td>7</td><td>High</td></tr>
+<tr><td>Sara Example</td><td>Other</td><td>Review manually</td><td>4</td><td>Low</td></tr>
+</tbody></table></div>
+<p><small>Score = role category relevance (1–5) plus the presence of
+Company, Position and URL fields (0–3). Not a measure of engagement,
+relationship strength, or personal value.</small></p>
+</main>
+<footer><p>MIT licensed source. This static page sends no contact data to a processing backend.</p></footer>
+</body>
+</html>
