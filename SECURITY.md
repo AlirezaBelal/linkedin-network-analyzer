@@ -29,7 +29,9 @@ The repository `.gitignore` excludes common export/output paths and secret-file 
 
 The supported LinkedIn Network Analyzer workflow is local data analysis only. It does not require LinkedIn credentials and does not log in to LinkedIn.
 
-A historical browser-automation file remains in the repository for provenance and is outside the supported analyzer workflow. For maintained connection-removal behavior, use the separate `linkedin-connection-remover` repository and review its safeguards before any live action.
+The historical destructive connection-removal script was removed from the active tree; old Git revisions may still contain it. The supported code performs analysis only.
+
+An older Space revision allowed CSV uploads and wrote all download outputs to a shared temporary path. The reviewed replacement is synthetic-only: no user input, processing or download. **This source change does not deploy the Space or delete historical uploads, caches, logs and revisions.** Hosted replacement requires separate, explicit owner approval.
 
 ## Dependency security
 

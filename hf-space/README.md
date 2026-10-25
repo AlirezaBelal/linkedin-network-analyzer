@@ -12,7 +12,7 @@ license: mit
 
 # LinkedIn Network Analyzer — Demo
 
-A privacy-aware demo for turning a LinkedIn-style connections CSV into a reviewable network map.
+A **synthetic-only, read-only demo** of explainable categorization and deterministic priority scores. Visitors cannot upload or download contact records. Analyze real exports using the local CLI, not this hosted example.
 
 This Space demonstrates:
 - role-title categorization
