@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none">
+  <meta name="description" content="Explore explainable, privacy-safe network insights using fictional connection records.">
+  <title>Network Atlas — LinkedIn Network Analyzer</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to the demo</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Network Atlas home"><span class="brand-mark" aria-hidden="true">N</span><span>Network Atlas<small>LinkedIn Network Analyzer</small></span></a>
+    <nav aria-label="Primary navigation"><a href="#workspace">Explore demo</a><a href="#method">How scoring works</a><a href="https://github.com/AlirezaBelal/linkedin-network-analyzer" rel="noreferrer">Source code</a></nav>
+  </header>
+  <main id="top">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy"><p class="eyebrow"><span class="pulse"></span> PRIVATE BY DESIGN · SYNTHETIC DATA</p><h1 id="page-title">See the shape of a professional network.</h1><p class="lede">Explore how transparent role-title rules group fictional connections and create a review queue. Every result is computed in this browser from the sample records below.</p><a class="button primary" href="#workspace">Explore the sample</a></div>
+      <aside class="privacy-card"><div class="privacy-icon" aria-hidden="true">◎</div><strong>No upload. No login. No real contacts.</strong><p>This demo cannot accept LinkedIn exports or send data to a server. Use the local CLI for private files.</p><a href="https://github.com/AlirezaBelal/linkedin-network-analyzer/blob/master/SECURITY.md" rel="noreferrer">Read the security guidance</a></aside>
+      <div class="hero-stats" aria-label="Sample overview"><div><strong id="total-count">0</strong><span>fictional profiles</span></div><div><strong id="category-count">0</strong><span>role groups</span></div><div><strong>100%</strong><span>browser-local</span></div></div>
+    </section>
+    <section class="workspace" id="workspace" aria-labelledby="workspace-title">
+      <div class="section-heading"><div><p class="eyebrow">THE EXPLORER</p><h2 id="workspace-title">Review the sample network</h2></div><button class="button quiet" id="reset" type="button">Reset filters</button></div>
+      <div class="sample-banner"><span class="sample-dot" aria-hidden="true"></span><p><strong>Fictional sample records</strong> — names, roles, and companies are invented. No personal export is accepted.</p><span id="result-count" aria-live="polite">5 records</span></div>
+      <div class="controls">
+        <label class="search-label" for="search">Search sample<span class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" type="search" maxlength="80" placeholder="Name, title, or company"></span></label>
+        <label for="category">Role group<select id="category"><option value="all">All groups</option></select></label>
+        <label for="priority">Review priority<select id="priority"><option value="all">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select></label>
+      </div>
+      <div class="insight-row" id="insights" aria-live="polite"></div>
+      <div class="table-scroll"><table><caption class="sr-only">Fictional network records and explainable review scores</caption><thead><tr><th scope="col">Connection</th><th scope="col">Role group</th><th scope="col">Recommendation</th><th scope="col">Score</th><th scope="col">Review band</th></tr></thead><tbody id="records"></tbody></table></div>
+      <p class="empty" id="empty" hidden>No fictional records match these filters. Clear a filter or reset the explorer.</p>
+    </section>
+    <section class="method" id="method" aria-labelledby="method-title"><div><p class="eyebrow">EXPLAINABLE HEURISTICS</p><h2 id="method-title">A prompt for human review, never an action.</h2><p>Role categories come from explicit keyword rules. The score combines the category's fixed relevance weight with up to three profile-completeness points (company, position, URL). A band helps sort a queue; it does not measure engagement, relationship strength, or personal value.</p></div><div class="rule-list"><div><span>01</span><p><strong>Classify</strong><br>Match position text to a visible role group.</p></div><div><span>02</span><p><strong>Score</strong><br>Category relevance + available profile fields.</p></div><div><span>03</span><p><strong>Review</strong><br>Check context yourself before any decision.</p></div></div><div class="disclaimer"><strong>Important limitation</strong><p>Real LinkedIn exports are not processed by this site. Keep private data on a secured local machine and use the repository's CLI. Categories can be wrong, and every recommendation needs human review.</p></div></section>
+  </main>
+  <footer><span>Network Atlas · Synthetic browser demonstration</span><a href="https://github.com/AlirezaBelal/linkedin-network-analyzer" rel="noreferrer">View project source</a></footer>
+</body>
+</html>
+
