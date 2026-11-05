@@ -327,3 +327,9 @@ Released under the [MIT License](LICENSE).
 ## Portfolio
 
 For broader project context and other product/data work, see **[alirezabelal.github.io](https://alirezabelal.github.io/)**.
+
+## Live browser demo
+
+[Open the GitHub Pages demo](https://alirezabelal.github.io/linkedin-network-analyzer/)
+
+The demo groups fictional connection records with explainable role-title rules and deterministic priority scores. Filtering and insights run in this browser; real LinkedIn exports are not accepted or uploaded.
