@@ -65,6 +65,21 @@ def run_pipeline(input_file: str | Path, output_dir: str | Path, step: str = "al
     if step not in STEPS:
         raise ValueError("Invalid pipeline step")
     input_path, output_path = Path(input_file), Path(output_dir)
+    # Refuse to overwrite the input or follow output symlinks. Only the CLI's
+    # documented managed files are overwritten; unrelated files are untouched.
+    for path in (output_path, *output_path.parents):
+        if path.is_symlink():
+            raise ValueError("Output directory must not contain symlinks")
+    managed = [output_path / name for name in (
+        *clean_and_categorize.CATEGORY_FILENAMES.values(),
+        "all_connections_categorized.csv", "final_linkedin_actions.xlsx", "linkedin_priority.xlsx",
+        "reports", "priority_reports",
+    )]
+    for path in managed:
+        if path.is_symlink() or path.resolve() == input_path.resolve():
+            raise ValueError("Output must not replace the input or use symlink destinations")
+        if path.is_dir() and any(child.is_symlink() for child in path.iterdir()):
+            raise ValueError("Report output must not contain symlinks")
     with _private_creation_permissions():
         output_path.mkdir(parents=True, exist_ok=True, mode=0o700)
         categorized_file = output_path / "all_connections_categorized.csv"

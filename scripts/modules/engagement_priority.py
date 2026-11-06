@@ -40,7 +40,7 @@ def assign_priority(score: int | float) -> str:
 
 def add_priority_score(input_file: str | Path, output_file: str | Path) -> str:
     """Add deterministic priority fields to a recommendation workbook."""
-    dataframe = pd.read_excel(input_file)
+    dataframe = pd.read_excel(input_file, keep_default_na=False)
     if "Category" not in dataframe.columns:
         raise ValueError("Input workbook must contain a 'Category' column.")
 

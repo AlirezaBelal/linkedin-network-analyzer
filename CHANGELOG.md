@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.0 - 2026-11-06
+
+- Release the bounded, opt-in Network Atlas local CSV workspace, fictional onboarding, safe review export and score explanations.
+- Match whole role keywords in Python/JavaScript; preserve precedence, score weights, recommendations and human review. Director and Production Supervisor now remain Other.
+- Reject ragged rows and empty headers; support Position-only preambles; preserve literal NA/NULL through workbook stages; remove obsolete category CSVs; reject output symlinks/input overlap.
+- Require Matplotlib 3.9+ to match the existing tick_labels chart API.
+- Add fixture parity and seven-width Chromium file-picker/download/privacy checks with production evidence.
+- Preserve Hugging Face source and its separate approval boundary.
+
+
 ## 1.0.1 - 2026-10-25
 
 ### Security and correctness
