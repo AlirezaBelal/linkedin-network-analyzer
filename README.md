@@ -318,7 +318,7 @@ These are explicit product boundaries rather than missing claims hidden behind t
 
 ## Release
 
-Current source release: **1.1.0** (Network Atlas local workspace and correctness hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This version describes repository source; publication has its own owner approval and verification boundary.
+Current source release: **1.1.1** (Network Atlas local workspace and correctness hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This version describes repository source; publication has its own owner approval and verification boundary.
 
 ## License
 
@@ -347,3 +347,5 @@ See [release security decision and QA evidence](docs/RELEASE-REVIEW.md).
 ### Managed CLI output behavior
 
 Rerunning a stage overwrites its documented outputs; category CSVs without current records are removed to prevent stale results. Unrelated files are untouched. Later-stage workbooks/charts regenerate only when requested; use a fresh output directory or --step all for a complete current set. Output symlinks and input/output overlap are rejected. Back up reports you intend to retain before rerunning.
+
+Formula-like CLI Excel column headers are quoted as text as of 1.1.1, alongside cell values. If quoting would produce duplicate headers, workbook creation rejects the ambiguity; rename those source columns and rerun. Standard schemas and raw CLI CSV values/headers are unchanged.

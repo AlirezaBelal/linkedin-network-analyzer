@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 - 2026-11-06
+
+- Escape formula-like Excel column headers as well as cell values. Reject sanitized-header collisions with a corrective message instead of exporting an ambiguous workbook. Standard headers and raw CLI CSVs are unchanged. Header display in Excel may gain an apostrophe; rename colliding source columns before retrying.
+- Add a synthetic workbook cell-type regression and idempotency/collision checks. No browser processing, UI, Hugging Face or account-action changes.
+
+
 ## 1.1.0 - 2026-11-06
 
 - Release the bounded, opt-in Network Atlas local CSV workspace, fictional onboarding, safe review export and score explanations.

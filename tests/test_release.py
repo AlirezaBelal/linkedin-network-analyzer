@@ -9,10 +9,26 @@ from scripts.modules.clean_and_categorize import categorize_title, read_connecti
 from scripts.modules.analyze_and_decide import action_recommendation
 from scripts.modules.engagement_priority import compute_priority_score, assign_priority
 from scripts.main import run_pipeline
+from scripts.modules.excel_safety import safe_for_excel
+from openpyxl import load_workbook
 
 ROOT=Path(__file__).resolve().parents[1]
 
 class ReleaseTests(unittest.TestCase):
+    def test_excel_headers_are_text_and_quote_collisions_fail_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'synthetic.xlsx'
+            frame=pd.DataFrame([{'Position':'Founder','=2+2':'synthetic',' +1':'synthetic'}])
+            safe=safe_for_excel(frame)
+            safe.to_excel(path,index=False)
+            sheet=load_workbook(path).active
+            self.assertEqual(sheet['B1'].data_type,'s')
+            self.assertEqual(sheet['B1'].value,"'=2+2")
+            self.assertEqual(sheet['C1'].data_type,'s')
+            self.assertEqual(list(safe_for_excel(safe).columns),list(safe.columns))
+            with self.assertRaisesRegex(ValueError,'headers collide'):
+                safe_for_excel(pd.DataFrame([['a','b']],columns=['=2+2',"'=2+2"]))
+
     def test_python_javascript_fixture_parity(self):
         titles=['','Founder','Director','Production Supervisor','actor','Architecture','throughput',
                 'Senior Product Manager','PM','Backend Engineer','CTO / Founder','HR AI Product Engineer',

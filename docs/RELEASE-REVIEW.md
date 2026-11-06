@@ -26,3 +26,5 @@ The browser workflow checks 320, 375, 390, 768, 1024, 1440 and 1920px; uses genu
 
 CI retains Python 3.10–3.14, package installation, installed CLI smoke, all six charts, coverage, dependency auditing and historical hosted-demo tests. No Hugging Face source/workflow changes or publication are included.
 
+
+Formula-like CLI Excel column headers are quoted as text as of 1.1.1, alongside cell values. If quoting would produce duplicate headers, workbook creation rejects the ambiguity; rename those source columns and rerun. Standard schemas and raw CLI CSV values/headers are unchanged.

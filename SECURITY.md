@@ -46,3 +46,5 @@ CSP connect-src none, no forms, no remote scripts, no telemetry, no persistent s
 Reset/leave discards application references and displayed contacts, not original files, downloads, backups, extensions or forensic memory contents. No data erasure is certified. Host compromise, malicious extensions, modified browsers, device access, and deliberate navigation remain outside this static app's assurance boundary. Use only fictional fixtures in issues and CI.
 
 Hugging Face source and the manual-only publication workflow remain unchanged. No automatic Space publication, removal of historical data or history, or cache erasure is claimed.
+
+Formula-like CLI Excel column headers are quoted as text as of 1.1.1, alongside cell values. If quoting would produce duplicate headers, workbook creation rejects the ambiguity; rename those source columns and rerun. Standard schemas and raw CLI CSV values/headers are unchanged.
