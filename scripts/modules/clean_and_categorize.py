@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -23,18 +24,18 @@ def categorize_title(title: object) -> str:
     if pd.isna(title):
         return "Other"
 
-    normalized = str(title).strip().lower()
+    normalized = re.sub(r"\s+", " ", str(title).strip().lower())
     if not normalized:
         return "Other"
 
     if any(
-        keyword in normalized
+        re.search(r"(?<!\w)" + re.escape(keyword) + r"(?!\w)", normalized)
         for keyword in ("hr", "recruiter", "talent", "people", "human resources")
     ):
         return "HR / Recruiter"
 
     if any(
-        keyword in normalized
+        re.search(r"(?<!\w)" + re.escape(keyword) + r"(?!\w)", normalized)
         for keyword in (
             "machine learning",
             "deep learning",
@@ -45,11 +46,11 @@ def categorize_title(title: object) -> str:
             "ml engineer",
             "artificial intelligence",
         )
-    ) or normalized.startswith(("ai ", "ml ", "data ")):
+    ) or re.match(r"^(ai|ml|data)(?: |$)", normalized):
         return "AI / Data"
 
     if any(
-        keyword in normalized
+        re.search(r"(?<!\w)" + re.escape(keyword) + r"(?!\w)", normalized)
         for keyword in (
             "product manager",
             "head of product",
@@ -61,7 +62,7 @@ def categorize_title(title: object) -> str:
         return "Product"
 
     if any(
-        keyword in normalized
+        re.search(r"(?<!\w)" + re.escape(keyword) + r"(?!\w)", normalized)
         for keyword in (
             "developer",
             "engineer",
@@ -82,13 +83,16 @@ def categorize_title(title: object) -> str:
 def detect_header_row(input_file: str | Path, max_lines: int = 12) -> int:
     """Find a LinkedIn-style CSV header even when explanatory lines precede it."""
     path = Path(input_file)
-    with path.open("r", encoding="utf-8-sig", errors="replace") as handle:
+    with path.open("r", encoding="utf-8-sig") as handle:
         for index, line in enumerate(handle):
             if index >= max_lines:
                 break
-            lowered = line.lower()
-            if "position" in lowered and ("first name" in lowered or "last name" in lowered):
-                return index
+            try:
+                columns = [value.strip() for value in next(csv.reader([line], strict=True))]
+                if "Position" in columns:
+                    return index
+            except (csv.Error, StopIteration):
+                continue
     return 0
 
 
@@ -112,19 +116,30 @@ def read_connections_csv(input_file: str | Path) -> pd.DataFrame:
         columns = [name.strip() for name in next(csv.reader([header_line], strict=True))]
     except (csv.Error, StopIteration) as exc:
         raise ValueError("Invalid Connections CSV header") from exc
-    if not columns or len(columns) > MAX_COLUMNS or len(columns) != len(set(columns)):
+    if not columns or any(not name for name in columns) or len(columns) > MAX_COLUMNS or len(columns) != len(set(columns)):
         raise ValueError("Connections CSV columns are empty, duplicated or excessive")
-
-    dataframe = pd.read_csv(path, skiprows=header_row, encoding="utf-8-sig",
-                            dtype=str, keep_default_na=False, nrows=MAX_INPUT_ROWS + 1)
-    dataframe.columns = [str(column).strip() for column in dataframe.columns]
-    if "Position" not in dataframe.columns:
+    if "Position" not in columns:
         raise ValueError("Input CSV must contain a 'Position' column")
-    if len(dataframe) == 0 or len(dataframe) > MAX_INPUT_ROWS:
+    rows = []
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            for _ in range(header_row):
+                handle.readline()
+            reader = csv.reader(handle, strict=True)
+            next(reader)
+            for row in reader:
+                if not row or all(not value.strip() for value in row):
+                    continue
+                if len(row) != len(columns):
+                    raise ValueError("Connections CSV has inconsistent columns")
+                rows.append(row)
+                if len(rows) > MAX_INPUT_ROWS:
+                    raise ValueError("Connections CSV is empty or exceeds the 50000-row limit")
+    except csv.Error as exc:
+        raise ValueError("Malformed Connections CSV; check quoting and delimiters") from exc
+    if not rows:
         raise ValueError("Connections CSV is empty or exceeds the 50000-row limit")
-    if len(dataframe.columns) != len(columns):
-        raise ValueError("Connections CSV has inconsistent columns")
-    return dataframe
+    return pd.DataFrame(rows, columns=columns, dtype=str)
 
 
 def clean_and_categorize(input_file: str | Path, output_dir: str | Path) -> str:
@@ -139,6 +154,8 @@ def clean_and_categorize(input_file: str | Path, output_dir: str | Path) -> str:
         subset = dataframe[dataframe["Category"] == category]
         if not subset.empty:
             subset.to_csv(destination / filename, index=False, encoding="utf-8-sig")
+        elif (destination / filename).is_file():
+            (destination / filename).unlink()
 
     combined_file = destination / "all_connections_categorized.csv"
     dataframe.to_csv(combined_file, index=False, encoding="utf-8-sig")

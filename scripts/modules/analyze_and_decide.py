@@ -22,7 +22,7 @@ def action_recommendation(category: object) -> str:
 
 def analyze_and_decide(input_file: str | Path, output_file: str | Path) -> str:
     """Add explainable review recommendations and save them as an Excel workbook."""
-    dataframe = pd.read_csv(input_file, encoding="utf-8-sig")
+    dataframe = pd.read_csv(input_file, encoding="utf-8-sig", dtype=str, keep_default_na=False)
     if "Category" not in dataframe.columns:
         raise ValueError("Categorized input must contain a 'Category' column.")
 

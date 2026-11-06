@@ -36,3 +36,13 @@ An older Space revision allowed CSV uploads and wrote all download outputs to a 
 ## Dependency security
 
 GitHub Actions installs the package, checks dependency consistency, runs offline tests, executes a synthetic smoke test, and audits CLI runtime dependencies. The public static preview has **no Python dependency set to audit**. A previously tested Gradio 6 stack pulled Pillow 12.3.0, which failed dependency auditing with advisories fixed in Pillow 13; removing this unnecessary dynamic stack is intentional, not an audit suppression. Passing checks do not certify the live Hugging Face instance or purge historical files.
+
+## GitHub Pages local-file boundary (1.1.0)
+
+The opt-in file picker reads authorized CSV bytes with a fatal UTF-8 decoder inside the visitor's tab. This is not server upload or a change to Hugging Face. Limits: 2 MiB / 2,000 records / 32 columns / 2,048 characters per field. Invalid input is rejected without echoing rows; dataset replacement occurs only after successful validation.
+
+CSP connect-src none, no forms, no remote scripts, no telemetry, no persistent storage, no profile links/fetches and text-only rendering constrain the static surface. Inputs and searches never enter URLs or logs. The fixed nine-column review CSV omits email/profile URLs and quotes formula/control-prefixed text. Spreadsheet applications can interpret imports differently; keep reports private.
+
+Reset/leave discards application references and displayed contacts, not original files, downloads, backups, extensions or forensic memory contents. No data erasure is certified. Host compromise, malicious extensions, modified browsers, device access, and deliberate navigation remain outside this static app's assurance boundary. Use only fictional fixtures in issues and CI.
+
+Hugging Face source and the manual-only publication workflow remain unchanged. No automatic Space publication, removal of historical data or history, or cache erasure is claimed.

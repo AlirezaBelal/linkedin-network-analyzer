@@ -1,0 +1,59 @@
+name: Network Atlas browser QA
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install isolated browser tools
+        run: |
+          mkdir -p "$RUNNER_TEMP/network-qa"
+          cp tests/product-visual-qa.mjs "$RUNNER_TEMP/network-qa/run.mjs"
+          npm install --prefix "$RUNNER_TEMP/network-qa" --no-save --package-lock=false playwright@1.56.1 @axe-core/playwright@4.10.2
+          "$RUNNER_TEMP/network-qa/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Serve product
+        run: python3 -m http.server 8765 --directory docs > /tmp/network-site.log 2>&1 &
+      - name: Seven-width synthetic and local-file privacy QA
+        env:
+          QA_OUTPUT: ${{ runner.temp }}/network-evidence
+        run: node "$RUNNER_TEMP/network-qa/run.mjs"
+      - name: Verify exact production release and repeat browser QA
+        if: github.event_name != 'pull_request'
+        env:
+          QA_OUTPUT: ${{ runner.temp }}/network-evidence/production
+          PRODUCT_URL: https://alirezabelal.github.io/linkedin-network-analyzer/
+        run: |
+          node --input-type=module <<'JS'
+          import {readFile} from 'node:fs/promises';
+          const paths=['index.html','app.js','style.css','favicon.svg','atlas.svg'];
+          const expected=await Promise.all(paths.map(p=>readFile('docs/'+p,'utf8')));
+          const norm=s=>s.replace(/\r\n/g,'\n').replace(/^\uFEFF/,'');
+          let ready=false;
+          for(let i=0;i<120;i++){
+            try{const actual=await Promise.all(paths.map(async p=>{const r=await fetch(process.env.PRODUCT_URL+p+'?qa='+Date.now());if(!r.ok)throw Error('HTTP '+r.status);return r.text();}));if(actual.every((s,j)=>norm(s)===norm(expected[j]))){ready=true;break;}}catch{}
+            await new Promise(r=>setTimeout(r,10000));
+          }
+          if(!ready)throw Error('Production does not match this release');
+          JS
+          node "$RUNNER_TEMP/network-qa/run.mjs"
+      - name: Save synthetic-only screenshots and machine-readable evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: network-atlas-qa-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/network-evidence/
+          retention-days: 14
+

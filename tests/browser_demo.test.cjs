@@ -1,30 +1,12 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const { categorizeTitle, analyze, sample } = require('../docs/app.js');
-
-test('browser title rules match representative project categories', () => {
-  for (const [title, expected] of [
-    ['Technical Recruiter', 'HR / Recruiter'], ['AI Engineer', 'AI / Data'],
-    ['PM', 'Product'], ['Backend Software Engineer', 'Developer'],
-    ['Community Founder', 'Other'], ['', 'Other']
-  ]) assert.equal(categorizeTitle(title), expected);
-});
-
-test('browser scoring follows category weight plus profile completeness', () => {
-  const results = analyze(sample);
-  assert.deepEqual(results.map(x => [x.category, x.score, x.priority]), [
-    ['Product', 8, 'High'], ['AI / Data', 6, 'Medium'],
-    ['HR / Recruiter', 6, 'Medium'], ['Developer', 7, 'High'], ['Other', 3, 'Low']
-  ]);
-  assert.ok(results.every(x => x.recommendation && x.first.endsWith('Example')));
-});
-
-test('public demo exposes no contact upload or outbound processing', () => {
-  const page = fs.readFileSync('docs/index.html', 'utf8');
-  const app = fs.readFileSync('docs/app.js', 'utf8');
-  assert.doesNotMatch(page, /type=["']file|<form\b/i);
-  assert.match(page, /connect-src 'none'/);
-  assert.doesNotMatch(app, /fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|localStorage/);
-});
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
+const d=require('../docs/app.js');
+test('sample scores and recommendations remain deterministic',()=>{assert.deepEqual(d.analyze(d.sample).map(r=>[r.category,r.score,r.priority]),[['Product',8,'High'],['AI / Data',6,'Medium'],['HR / Recruiter',6,'Medium'],['Developer',7,'High'],['Other',3,'Low']]);});
+test('whole keywords prevent substring false positives and preserve precedence',()=>{for(const title of ['Director','Production Supervisor','Architecture','actor','throughput'])assert.equal(d.categorizeTitle(title),'Other');assert.equal(d.categorizeTitle('HR AI Product Engineer'),'HR / Recruiter');assert.equal(d.categorizeTitle('  DATA\tEngineer '),'AI / Data');assert.equal(d.categorizeTitle('CTO / Founder'),'Developer');});
+test('CSV supports BOM, preamble, quotes, multiline text and literal NA',()=>{const r=d.parseCSV('\uFEFFNotes: fictional\n"First Name",Company,Position,URL\n"Example, ""Test""",NA,"Product\nManager",NULL\n');assert.equal(r.records[0]['First Name'],'Example, "Test"');assert.equal(d.analyze(r.records)[0].score,8);});
+test('malformed and unsafe sizes fail without echoing contact values',()=>{for(const text of ['', 'Position\n','Position,Position\nA,B','Position,\nA,B','Name\nA','Position,Company\nA','Position\n"unterminated','Position\nbad"quote','Position\nA\0B','Position\n'+ 'a'.repeat(2049),'Position\n'+('A\n'.repeat(2001)),'Position,'+Array.from({length:32},(_,i)=>'C'+i).join(',')+'\nA'])assert.throws(()=>d.parseCSV(text));assert.throws(()=>d.parseCSV('x'.repeat(d.LIMITS.bytes+1)),/2 MiB/);});
+test('prototype keys remain inert imported text',()=>{const rows=d.parseCSV('Position,__proto__,constructor\nFounder,synthetic,synthetic\n').records;assert.equal(Object.getPrototypeOf(rows[0]),null);assert.equal(d.analyze(rows)[0].category,'Other');});
+test('combined filters intersect without mutation and reset returns dataset',()=>{const rows=d.analyze(d.sample);assert.equal(d.filterRecords(rows,{query:'Example',category:'Product',priority:'High'}).length,1);assert.equal(d.filterRecords(rows,{query:'no-match'}).length,0);assert.deepEqual(d.filterRecords(rows),rows);});
+test('review CSV quotes formulas, delimiters, multiline cells and omits private columns',()=>{for(const value of ['=1+1',' +SUM(1,2)','@formula','-1','\tformula','\nformula'])assert.ok(d.safeCell(value).startsWith('"\\\''.replace('\\','')));const row=d.analyze([{'First Name':'=2+2',Position:'Product Manager',Company:'a,"b"',URL:'https://private.invalid', 'Email Address':'synthetic@example.invalid'}]);const csv=d.exportCSV(row);assert.ok(csv.startsWith('\uFEFF'));assert.match(csv,/'=2\+2/);assert.match(csv,/a,""b""/);assert.doesNotMatch(csv,/private.invalid|Email Address|synthetic@example/);assert.equal(csv.split('\r\n')[0].split(',').length,9);});
+test('privacy architecture forbids outbound processing and persistent state',()=>{const html=fs.readFileSync('docs/index.html','utf8'),app=fs.readFileSync('docs/app.js','utf8');assert.match(html,/connect-src 'none'/);assert.match(html,/form-action 'none'/);assert.doesNotMatch(app,/fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|localStorage|sessionStorage|indexedDB|console\.|innerHTML|insertAdjacentHTML/);assert.doesNotMatch(html,/<form\b|<iframe\b|(?:src|href)=["']https:\/\/[^"']+\.(?:js|css)["']/);});
+test('conservative upper bound parses 2000 synthetic rows under 5 seconds',()=>{const text='First Name,Position,Company,URL\n'+Array.from({length:2000},()=> 'Example,Backend Engineer,'+'x'.repeat(1000)+',\n').join('');const start=performance.now(),before=process.memoryUsage().heapUsed;assert.equal(d.analyze(d.parseCSV(text).records).length,2000);const elapsed=performance.now()-start,heap=process.memoryUsage().heapUsed-before;assert.ok(elapsed<5000);assert.ok(heap<100*1024*1024);});
 

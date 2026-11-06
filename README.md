@@ -318,7 +318,7 @@ These are explicit product boundaries rather than missing claims hidden behind t
 
 ## Release
 
-Current source release: **1.0.1** (security and data-processing hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This version describes repository source; publication has its own owner approval and verification boundary.
+Current source release: **1.1.0** (Network Atlas local workspace and correctness hardening). Changes are documented in [CHANGELOG.md](CHANGELOG.md). This version describes repository source; publication has its own owner approval and verification boundary.
 
 ## License
 
@@ -332,4 +332,18 @@ For broader project context and other product/data work, see **[alirezabelal.git
 
 [Open the GitHub Pages demo](https://alirezabelal.github.io/linkedin-network-analyzer/)
 
-The demo groups fictional connection records with explainable role-title rules and deterministic priority scores. Filtering and insights run in this browser; real LinkedIn exports are not accepted or uploaded.
+Network Atlas starts with five fictional records. After explicit consent, an authorized UTF-8 CSV can be analyzed entirely in your browser tab. No upload, server processing, telemetry, persistence, account login, or profile URL fetching is implemented. This separate GitHub Pages capability does not change the static, synthetic-only Hugging Face Space.
+
+Browser limits: **2 MiB, 2,000 records, 32 columns, 2,048 characters per field**. Input requires unique non-empty headers and a case-sensitive Position column. A header in the first 12 physical lines supports preambles. Quoted values, escaped quotes and multiline fields are supported; line endings normalize to LF. Invalid UTF-8, malformed quoting, ragged rows, NULs and empty datasets fail closed. Browser quoting is stricter than Python for unquoted quote characters.
+
+Search, combined category/priority filters, role distributions, twenty-row pagination and explanations compute locally. Invalid files retain the previous dataset. Clear Local Data & Restore Sample discards imported records without mixing them with sample data. Leaving the page clears the active workspace, including back/forward restoration; this is not secure memory erasure.
+
+The browser downloads only the filtered review view: First Name, Last Name, Position, Company, Category, Action Recommendation, Priority Score, Priority, Score Basis. Values are quoted, embedded quotes doubled, and formula/control-prefixed text receives an apostrophe. Email, URL and extra input columns are omitted. Keep reports private. This is not the full CLI output set.
+
+Fixed precedence: HR / Recruiter → AI / Data → Product → Developer → Other. Version 1.1 matches whole keywords, correcting false positives such as Director and Production Supervisor. Completeness counts non-empty Company/Position/URL, including literal NA and NULL; this checks presence, not validity.
+
+See [release security decision and QA evidence](docs/RELEASE-REVIEW.md).
+
+### Managed CLI output behavior
+
+Rerunning a stage overwrites its documented outputs; category CSVs without current records are removed to prevent stale results. Unrelated files are untouched. Later-stage workbooks/charts regenerate only when requested; use a fresh output directory or --step all for a complete current set. Output symlinks and input/output overlap are rejected. Back up reports you intend to retain before rerunning.
