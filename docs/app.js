@@ -5,20 +5,25 @@ const categoryPoints={Product:5,Developer:4,'AI / Data':4,'HR / Recruiter':3,Oth
 const recommendations={Product:'Prioritize outreach','AI / Data':'Prioritize outreach',Developer:'Explore collaboration','HR / Recruiter':'Keep warm',Other:'Review manually'};
 const rules=[['HR / Recruiter',['hr','recruiter','talent','people','human resources']],['AI / Data',['machine learning','deep learning','data scientist','data analyst','data engineer','ai engineer','ml engineer','artificial intelligence']],['Product',['product manager','head of product','product owner','product lead','product']],['Developer',['developer','engineer','cto','backend','frontend','fullstack','full stack','software','programmer']]];
 const sample=[['Ava','Senior Product Manager','Example Labs','ava'],['Noah','Machine Learning Engineer','Example AI',''],['Mina','Technical Recruiter','Example Talent','mina'],['Omid','Backend Software Engineer','Example Systems','omid'],['Sara','Community Founder','Example Studio','']].map(([name,Position,Company,url])=>({'First Name':name,'Last Name':'Example',Position,Company,URL:url?'https://example.invalid/'+url:''}));
-function classify(value){const title=String(value??'').trim().toLowerCase().replace(/\s+/gu,' ');for(const [category,terms] of rules){for(const term of terms)if(new RegExp('(^|[^\\p{L}\\p{N}_])'+term+'($|[^\\p{L}\\p{N}_])','u').test(title))return {category,matched:term};if(category==='AI / Data'&&/^(ai|ml|data)(?: |$)/.test(title))return {category,matched:title.split(' ')[0]+' prefix'};if(category==='Product'&&title==='pm')return {category,matched:'pm'};}return {category:'Other',matched:'No supported keyword'};}
+const pythonWhitespace=/[\u0009-\u000d\u001c-\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/gu;
+const pythonTrim=new RegExp('^'+pythonWhitespace.source+'|'+pythonWhitespace.source+'$','gu');
+function trimValue(value){return String(value??'').replace(pythonTrim,'');}
+function normalizeTitle(value){return trimValue(value).toLowerCase().replace(pythonWhitespace,' ');}
+function hasValue(value){return String(value??'').replace(pythonWhitespace,'').length>0;}
+function classify(value){const title=normalizeTitle(value);for(const [category,terms] of rules){for(const term of terms)if(new RegExp('(^|[^\\p{L}\\p{N}_])'+term+'($|[^\\p{L}\\p{N}_])','u').test(title))return {category,matched:term};if(category==='AI / Data'&&/^(ai|ml|data)(?: |$)/.test(title))return {category,matched:title.split(' ')[0]+' prefix'};if(category==='Product'&&title==='pm')return {category,matched:'pm'};}return {category:'Other',matched:'No supported keyword'};}
 function categorizeTitle(value){return classify(value).category;}
-function analyze(records){return records.map(r=>{const match=classify(r.Position),completeness=['Company','Position','URL'].filter(k=>String(r[k]??'').trim()).length,score=categoryPoints[match.category]+completeness;return {...r,...match,completeness,score,priority:score>=7?'High':score>=5?'Medium':'Low',recommendation:recommendations[match.category]};});}
+function analyze(records){return records.map(r=>{const match=classify(r.Position),completeness=['Company','Position','URL'].filter(k=>hasValue(r[k])).length,score=categoryPoints[match.category]+completeness;return {...r,...match,completeness,score,priority:score>=7?'High':score>=5?'Medium':'Low',recommendation:recommendations[match.category]};});}
 function parseCSV(text){
  if(new TextEncoder().encode(text).length>LIMITS.bytes)throw Error('File exceeds 2 MiB. Use the Python CLI for larger exports.');
  if(text.includes('\0'))throw Error('NUL characters are not supported. Save a UTF-8 CSV.');
  const lines=text.replace(/^\uFEFF/,'').split(/\r\n|\n|\r/);let start=0;
- for(let i=0;i<Math.min(12,lines.length);i++)if(lines[i].split(',').some(s=>s.trim().replace(/^"|"$/g,'')==='Position')){start=i;break;}
+ for(let i=0;i<Math.min(12,lines.length);i++)if(lines[i].split(',').some(s=>trimValue(trimValue(s).replace(/^"|"$/g,''))==='Position')){start=i;break;}
  text=lines.slice(start).join('\n');let rows=[],row=[],field='',quoted=false,closed=false,atStart=true;
  function cell(){row.push(field);field='';closed=false;atStart=true;if(row.length>LIMITS.columns)throw Error('At most 32 columns are supported.');}
- function line(){cell();if(row.some(v=>v.trim()))rows.push(row);row=[];if(rows.length>LIMITS.rows+1)throw Error('At most 2,000 records are supported.');}
+ function line(){cell();if(row.some(v=>hasValue(v)))rows.push(row);row=[];if(rows.length>LIMITS.rows+1)throw Error('At most 2,000 records are supported.');}
  for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'){if(text[i+1]==='"'){field+='"';i++;}else{quoted=false;closed=true;}}else field+=c;}else if(c===',')cell();else if(c==='\n')line();else if(c==='"'&&atStart){quoted=true;atStart=false;}else{if(closed||c==='"')throw Error('Malformed CSV quoting. Use comma-separated UTF-8 CSV.');field+=c;atStart=false;}if(field.length>LIMITS.field)throw Error('A field exceeds 2,048 characters. Use the CLI.');}
  if(quoted)throw Error('Unclosed CSV quote. Correct the CSV and retry.');if(field||row.length||closed)line();
- const headers=(rows.shift()||[]).map(s=>s.trim());if(!headers.length||headers.some(s=>!s)||new Set(headers).size!==headers.length)throw Error('Column names must be non-empty and unique.');
+ const headers=(rows.shift()||[]).map(s=>trimValue(s));if(!headers.length||headers.some(s=>!s)||new Set(headers).size!==headers.length)throw Error('Column names must be non-empty and unique.');
  if(!headers.includes('Position'))throw Error('A case-sensitive Position column is required.');if(!rows.length)throw Error('No records found. Include at least one data row.');
  return {headers,records:rows.map(values=>{if(values.length!==headers.length)throw Error('Inconsistent row width. Every row must match the header.');const r=Object.create(null);headers.forEach((k,i)=>r[k]=values[i]);return r;})};
 }

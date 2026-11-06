@@ -20,7 +20,7 @@ Pinned design and web-ui-audit skills at 5e85045d96662605f33e12150cdc6d00cb04dc0
 Implementation findings addressed: oversized hero (72px) reduced to 34–54px; input outline suppression replaced with visible focus; count-only chips replaced with labeled distributions; empty-state recovery and file-error focus added; tables scroll within a labeled keyboard region; results paginate; raw strings use text nodes; no animation is required. Private search/filter state deliberately stays out of URLs.
 
 ## Verification contract
-Python tests cover original CLI reports and protections plus CSV, stale-file, overlap/symlink and NA/NULL regressions. A 128-case synthetic Python/JavaScript parity suite checks categories, scoring, priority and recommendations. Node tests cover rules, quotes, malformed/oversized input, prototype keys, CSV safety and runtime privacy.
+Python tests cover original CLI reports and protections plus CSV, stale-file, overlap/symlink and NA/NULL regressions. A 288-case synthetic Python/JavaScript parity suite checks categories, scoring, priority and recommendations. Node tests cover rules, quotes, malformed/oversized input, prototype keys, CSV safety and runtime privacy.
 
 The browser workflow checks 320, 375, 390, 768, 1024, 1440 and 1920px; uses genuine file-chooser and download events with fictional CSVs; tests malformed files, injection text, clear/reset, filters and pagination; scans sample/imported states with axe; checks assets, overflow, keyboard focus, empty states, browser errors, storage and unexpected network requests. Master-only verification waits for the exact published static release, then repeats the matrix. Artifacts contain only synthetic data.
 
@@ -28,3 +28,5 @@ CI retains Python 3.10–3.14, package installation, installed CLI smoke, all si
 
 
 Formula-like CLI Excel column headers are quoted as text as of 1.1.1, alongside cell values. If quoting would produce duplicate headers, workbook creation rejects the ambiguity; rename those source columns and rerun. Standard schemas and raw CLI CSV values/headers are unchanged.
+
+JavaScript title/completeness normalization explicitly follows Python Unicode whitespace, including NEL and control separators; BOM inside a field remains a present value. The 288-case fixture cross-check includes these boundaries. File-level UTF-8 BOM handling remains separate.
