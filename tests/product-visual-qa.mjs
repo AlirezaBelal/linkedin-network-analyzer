@@ -11,7 +11,7 @@ try{for(const width of [320,375,390,768,1024,1440,1920]){
  const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce',acceptDownloads:true});const page=await context.newPage();const errors=[],requests=[],bad=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});page.on('request',r=>requests.push({url:r.url(),method:r.method()}));page.on('response',r=>{if(r.status()>=400)bad.push(r.status()+' '+r.url());});
  await page.goto(url,{waitUntil:'networkidle'});assert.equal(await page.locator('#records tr').count(),5);assert(await page.locator('#local-file').isDisabled());
- await page.keyboard.press('Tab');assert(await page.evaluate(()=>document.activeElement!==document.body&&getComputedStyle(document.activeElement).outlineStyle!=='none'),'focus');
+ await page.keyboard.press('Tab');assert(await page.evaluate(()=>document.activeElement!==document.body&&getComputedStyle(document.activeElement).outlineStyle!=='none'),'focus');await page.locator('h1').click();
  assert.equal(await page.locator('h1').count(),1);assert(await page.locator('h1').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)<=60));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'overflow');assert(await page.locator('img').evaluateAll(xs=>xs.every(x=>x.complete&&x.naturalWidth)),'assets');
  for(const a of await page.locator('a[href^="#"]').all()){assert(await page.locator(await a.getAttribute('href')).count());}
