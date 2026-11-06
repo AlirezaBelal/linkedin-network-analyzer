@@ -2,6 +2,8 @@
 
 ## 1.1.1 - 2026-11-06
 
+- Align browser title/completeness whitespace with Python, including NEL/control separators and in-field BOM; expand deterministic parity to 288 cases.
+
 - Escape formula-like Excel column headers as well as cell values. Reject sanitized-header collisions with a corrective message instead of exporting an ambiguous workbook. Standard headers and raw CLI CSVs are unchanged. Header display in Excel may gain an apostrophe; rename colliding source columns before retrying.
 - Add a synthetic workbook cell-type regression and idempotency/collision checks. No browser processing, UI, Hugging Face or account-action changes.
 

@@ -10,3 +10,10 @@ test('review CSV quotes formulas, delimiters, multiline cells and omits private 
 test('privacy architecture forbids outbound processing and persistent state',()=>{const html=fs.readFileSync('docs/index.html','utf8'),app=fs.readFileSync('docs/app.js','utf8');assert.match(html,/connect-src 'none'/);assert.match(html,/form-action 'none'/);assert.doesNotMatch(app,/fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|localStorage|sessionStorage|indexedDB|console\.|innerHTML|insertAdjacentHTML/);assert.doesNotMatch(html,/<form\b|<iframe\b|(?:src|href)=["']https:\/\/[^"']+\.(?:js|css)["']/);});
 test('conservative upper bound parses 2000 synthetic rows under 5 seconds',()=>{const text='First Name,Position,Company,URL\n'+Array.from({length:2000},()=> 'Example,Backend Engineer,'+'x'.repeat(1000)+',\n').join('');const start=performance.now(),before=process.memoryUsage().heapUsed;assert.equal(d.analyze(d.parseCSV(text).records).length,2000);const elapsed=performance.now()-start,heap=process.memoryUsage().heapUsed-before;assert.ok(elapsed<5000);assert.ok(heap<100*1024*1024);});
 
+
+test('Unicode whitespace agrees with Python title and completeness semantics',()=>{
+ const rows=d.analyze([{Position:'DATA\u0085Engineer',Company:'\u0085',URL:''},{Position:'PM\ufeff',Company:'\ufeff',URL:''}]);
+ assert.deepEqual(rows.map(r=>[r.category,r.score]),[['AI / Data',5],['Other',3]]);
+ assert.throws(()=>d.parseCSV('Position\n\u0085\n'),/No records/);
+ assert.equal(d.parseCSV('Notes: synthetic\n"Position\u0085"\nFounder\n').records[0].Position,'Founder');
+});

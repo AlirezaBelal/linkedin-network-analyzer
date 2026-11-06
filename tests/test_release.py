@@ -35,9 +35,9 @@ class ReleaseTests(unittest.TestCase):
                 'DATA\tEngineer','ML','AI','Data','AI Engineer','hr','Human Resources','RECRUITER',
                 'مدیر محصول','مهندس نرم‌افزار','développeur','产品经理','Productivity Coach',
                 'Data-Engineer','Software_engineer','Software Engineer','Senior\u00a0Product Manager',
-                'leadership','Recruitment Advisor',None]
+                'leadership','Recruitment Advisor',None,'DATA\u0085Engineer','PM\ufeff','AI\u001cEngineer','\u0085']
         rows=[{'Position':title,'Company':company,'URL':url} for title in titles
-              for company in ['', 'NA'] for url in ['', 'NULL']]
+              for company in ['', 'NA', '\u0085', '\ufeff'] for url in ['', 'NULL']]
         expected=[]
         for row in rows:
             category=categorize_title(row['Position'])
@@ -46,7 +46,7 @@ class ReleaseTests(unittest.TestCase):
         script="const d=require('./docs/app.js');let s='';process.stdin.on('data',c=>s+=c);process.stdin.on('end',()=>process.stdout.write(JSON.stringify(d.analyze(JSON.parse(s)).map(r=>[r.category,r.score,r.priority,r.recommendation]))));"
         result=subprocess.run(['node','-e',script],input=json.dumps(rows),text=True,capture_output=True,cwd=ROOT,check=True)
         self.assertEqual(json.loads(result.stdout),expected)
-        self.assertEqual(len(expected),128)
+        self.assertEqual(len(expected),288)
 
     def test_strict_csv_rejects_ragged_empty_header_and_invalid_utf8(self):
         with tempfile.TemporaryDirectory() as tmp:
